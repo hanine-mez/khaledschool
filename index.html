@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khaled School — مدرسة خالد التعليمية</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    .welcome-container {
+      max-width: 800px;
+      margin: 60px auto;
+      text-align: center;
+      padding: 20px;
+    }
+    .logo-large {
+      height: 90px;
+      margin-bottom: 15px;
+    }
+    .choices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .choice-card {
+      background: var(--card);
+      border: 2px solid var(--rule);
+      border-radius: 12px;
+      padding: 30px;
+      text-decoration: none;
+      color: var(--ink);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .choice-card:hover {
+      border-color: var(--brass);
+      transform: translateY(-5px);
+    }
+    .choice-card h3 {
+      font-size: 22px;
+      color: var(--brass);
+      margin-bottom: 10px;
+    }
+    .admin-link-wrapper {
+      margin-top: 40px;
+    }
+    .admin-btn {
+      background: transparent;
+      border: 1px dashed var(--slate);
+      color: var(--slate);
+      padding: 8px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .admin-btn:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- واجهة الترحيب العامة (البوكسين) -->
+  <main class="welcome-container" id="public-home">
+    <img src="assets/images/logo.png" alt="Khaled School Logo" class="logo-large">
+    <h1 style="color: var(--ink); font-size: 28px;">مرحباً بكم في مدرسة خالد التعليمية</h1>
+    <p style="color: var(--slate); margin-top: 10px;">الرجاء اختيار نوع التعليم للولوج إلى المنصة والدروس:</p>
+
+   <div class="choices-grid">
+      <!-- البوكس الأول: التعليم عن بعد -->
+      <a href="student_portal.php?mode=online" class="choice-card">
+        <h3>التعليم الإلكتروني عن بعد</h3>
+        <p>تصفح الفيديوهات، الدروس المسجلة، والمقاييس عبر الإنترنت بكل سهولة.</p>
+      </a>
+
+      <!-- البوكس الثاني: التعليم الحضوري -->
+      <a href="student_portal.php?mode=present" class="choice-card">
+        <h3>التعليم الحضوري</h3>
+        <p>متابعة جداول الحصص، الحضور، والتواصل المباشر مع الأساتذة في المقر.</p>
+      </a>
+    </div>
+
+    <div class="admin-link-wrapper">
+      <button class="admin-btn" onclick="openAdminLogin()">تسجيل دخول الإدارة (Admin)</button>
+    </div>
+
+    <div id="admin-login-box" class="panel hidden" style="max-width: 400px; margin: 20px auto; text-align: right;">
+      <h3>تسجيل دخول لوحة التحكم</h3>
+      <form id="form-login" class="form" style="grid-template-columns: 1fr;">
+        <label class="f">اسم المستخدم <input name="username" required value="admin"></label>
+        <label class="f">كلمة المرور <input name="password" type="password" required value="Khaled1996"></label>
+        <button class="btn" type="submit">دخول لوحة التحكم</button>
+        <p id="login-err" style="color: var(--danger);"></p>
+      </form>
+    </div>
+  </main>
+
+  <!-- لوحة تحكم الأدمن الكاملة -->
+  <div id="admin-dashboard-view" class="hidden">
+    <header class="top">
+      <div class="brand">
+        <img src="assets/images/logo.png" alt="Logo" class="logo" style="height: 40px;">
+        <h1>لوحة تحكم الأدمن — Khaled School</h1>
+      </div>
+      <nav class="menu">
+        <button id="btn-dashboard" class="active" onclick="navigateTo('dashboard')">الرئيسية</button>
+        <button id="btn-finance" onclick="navigateTo('finance')">تسيير المالية</button>
+        <button id="btn-attendance" onclick="navigateTo('attendance')">ورقة الحضور</button>
+        <button id="btn-students" onclick="navigateTo('students')">الطلاب</button>
+        <button id="btn-teachers" onclick="navigateTo('teachers')">الأساتذة</button>
+        <button id="btn-courses" onclick="navigateTo('courses')">المقاييس</button>
+        <button id="btn-videos" onclick="navigateTo('videos')">الفيديوهات</button>
+      </nav>
+      <button class="del" onclick="logout()">خروج</button>
+    </header>
+
+    <main style="max-width: 1100px; margin: 20px auto; padding: 0 20px;">
+      
+      <!-- الرئيسية -->
+      <section id="sec-dashboard">
+        <h2>لوحة التحكم الإحصائية</h2>
+        <div class="stats">
+          <div class="stat"><b id="stat-students">0</b><span>إجمالي الطلاب المسجلين</span></div>
+          <div class="stat"><b id="stat-teachers">0</b><span>عدد الأساتذة</span></div>
+          <div class="stat"><b id="stat-courses">0</b><span>المقاييس والدروس</span></div>
+          <div class="stat school"><b id="stat-revenue">0 دج</b><span>المداخيل الإجمالية</span></div>
+        </div>
+      </section>
+
+      <!-- المالية -->
+      <section id="sec-finance" class="hidden">
+        <h2>تسيير المداخيل والمستحقات المالية</h2>
+        <div class="stats">
+          <div class="stat"><span>المداخيل الإجمالية</span><b id="fin-total">0 دج</b></div>
+          <div class="stat teacher"><span>حصة الأساتذة</span><b id="fin-teacher">0 دج</b></div>
+          <div class="stat school"><span>صافي مدخول المؤسسة</span><b id="fin-school">0 دج</b></div>
+        </div>
+        <div class="panel">
+          <h3>تسجيل وصل مدخول طالب</h3>
+          <form id="form-payment" class="form">
+            <label class="f">الطالب <select name="student_id" id="select-student" required></select></label>
+            <label class="f">المقياس <select name="course_id" id="select-course" required></select></label>
+            <label class="f">المبلغ المدفوع <input name="amount_paid" type="number" step="100" required></label>
+            <button class="btn" type="submit">حفظ واحتساب</button>
+          </form>
+        </div>
+        <div class="wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>الطالب</th>
+                <th>المقياس</th>
+                <th>المبلغ</th>
+                <th>الأستاذ</th>
+                <th>حصة الأستاذ</th>
+                <th>صافي المؤسسة</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-finance"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ورقة الحضور -->
+      <section id="sec-attendance" class="hidden">
+        <h2>ورقة الحضور اليومية</h2>
+        <div class="panel">
+          <h3>تسجيل حضور حصة (حسب التاريخ والكلندر)</h3>
+          <form id="form-attendance" class="form">
+            <label class="f">التاريخ <input name="attendance_date" type="date" required></label>
+            <label class="f">المقياس <select name="course_id" id="att-course" required></select></label>
+            <label class="f">الطالب المسجل <select name="student_id" id="att-student" required></select></label>
+            <label class="f">اسم الأستاذ <input name="teacher_name" required></label>
+            <label class="f">التوقيت <input name="session_time" required placeholder="08:00 - 09:00"></label>
+            <label class="f">الحالة 
+              <select name="status">
+                <option value="حاضر">حاضر</option>
+                <option value="غائب">غائب</option>
+                <option value="متأخر">متأخر</option>
+              </select>
+            </label>
+            <button class="btn" type="submit">حفظ الحضور</button>
+          </form>
+        </div>
+        <div class="wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>التاريخ</th>
+                <th>اسم الطالب</th>
+                <th>المقياس</th>
+                <th>الأستاذ</th>
+                <th>التوقيت</th>
+                <th>الحالة</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-attendance"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- الطلاب -->
+      <section id="sec-students" class="hidden">
+        <h2>إدارة الطلاب</h2>
+        <div class="panel">
+          <h3>إضافة طالب جديد</h3>
+          <form id="form-student" class="form">
+            <label class="f">الاسم <input name="first_name" required></label>
+            <label class="f">اللقب <input name="last_name" required></label>
+            <label class="f">الهاتف <input name="phone"></label>
+            <label class="f">التخصص <input name="specialty" required></label>
+            <button class="btn" type="submit">حفظ</button>
+          </form>
+        </div>
+        <div style="margin-bottom: 14px;">
+          <input type="search" id="search-student" placeholder="بحث عن طالب..." oninput="loadStudents(this.value)" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--rule);">
+        </div>
+        <div class="wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>الاسم واللقب</th>
+                <th>الهاتف</th>
+                <th>التخصص</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-students"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- الأساتذة -->
+      <section id="sec-teachers" class="hidden">
+        <h2>إدارة الأساتذة والنسب</h2>
+        <div class="panel">
+          <h3>إضافة أستاذ جديد</h3>
+          <form id="form-teacher" class="form">
+            <label class="f">اسم الأستاذ <input name="name" required></label>
+            <label class="f">الهاتف <input name="phone"></label>
+            <label class="f">النسبة (%) <input name="percentage" type="number" step="0.5" value="50.0"></label>
+            <button class="btn" type="submit">حفظ</button>
+          </form>
+        </div>
+        <div class="wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>الاسم</th>
+                <th>الهاتف</th>
+                <th>النسبة</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-teachers"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- المقاييس -->
+      <section id="sec-courses" class="hidden">
+        <h2>إدارة المقاييس والدروس</h2>
+        <div class="panel">
+          <h3>إضافة مقياس جديد</h3>
+          <form id="form-course" class="form">
+            <label class="f">الرمز <input name="code" required></label>
+            <label class="f">اسم المقياس <input name="title" required></label>
+            <label class="f">المستوى <input name="level" required></label>
+            <label class="f">السعر <input name="rate" type="number" value="500"></label>
+            <button class="btn" type="submit">حفظ</button>
+          </form>
+        </div>
+        <div class="wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>الرمز</th>
+                <th>المقياس</th>
+                <th>المستوى</th>
+                <th>الأستاذ</th>
+                <th>السعر</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-courses"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- الفيديوهات -->
+      <section id="sec-videos" class="hidden">
+        <h2>منصة الفيديوهات المحمية (مشاهدة فقط)</h2>
+        <div class="panel">
+          <h3>إضافة فيديو جديد</h3>
+          <form id="form-video" class="form">
+            <label class="f">المقياس <select name="course_id" id="video-course" required></select></label>
+            <label class="f">عنوان الدرس <input name="title" required></label>
+            <label class="f">رابط الفيديو (MP4) <input name="video_url" required></label>
+            <button class="btn" type="submit">حفظ</button>
+          </form>
+        </div>
+        <div id="video-list" style="margin-top: 15px;"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    function openAdminLogin() {
+      document.getElementById('admin-login-box').classList.toggle('hidden');
+    }
+  </script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
